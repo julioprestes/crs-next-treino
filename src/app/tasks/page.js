@@ -13,7 +13,7 @@ import {
     Text,
     Group
 } from "@chakra-ui/react"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdAdd, MdDelete, MdMode, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { ButtonGroup, IconButton, Pagination } from "@chakra-ui/react"
 
@@ -41,8 +41,13 @@ export default function Tasks() {
     }
 
     const excluirTask = (index) => {
-        const taskExcluido = tasks.filter((_, i) => i != index);
+        const taskDeletar = tasksAtuais[index];
+        const taskExcluido = tasks.filter(task => task !== taskDeletar);
+        if (tasksAtuais.length === 1 && currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
         setTasks(taskExcluido);
+        
     }
 
     const editarTask = () => {
@@ -61,10 +66,14 @@ export default function Tasks() {
     }
 
     const trocaPage = (i) => {
-        if (tasksAtuais.length === 0 && currentPage != 1) {
+        if (tasksAtuais.length === 0 && currentPage > 1) {
             setCurrentPage (currentPage - 1)
         }
     }
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchInput]);
 
     return (
         <Box p={8}>
@@ -103,61 +112,60 @@ export default function Tasks() {
                     {tasksAtuais.map((task, i) => (
                     <Table.Row key={i}>
                         <Table.Cell>{task}</Table.Cell>
-                        <Table.Cell textAlign="center">
-                            <Stack direction="row">
-                            <Popover.Root>
-                                <Popover.Trigger asChild>
+                        <Table.Cell textAlign="center" >
+                            <Stack direction="row" alignSelf="end">
+                                <Popover.Root>
+                                    <Popover.Trigger asChild>
+                                    <Button
+                                        background="blue"
+                                        color="white"
+                                        variant="suble"
+                                        size="xs"
+                                        onClick={() => handleEditButtonClick(i)}
+                                    >
+                                        <MdMode />
+                                        </Button>
+                                    </Popover.Trigger>
+                                    <Portal>
+                                        <Popover.Positioner>
+                                        <Popover.Content>
+                                            <Popover.Arrow />
+                                            <Popover.Body>
+                                            <Popover.Title fontWeight="medium">Editar Tarefa</Popover.Title>
+                                            </Popover.Body>
+                                            <Popover.Footer>
+                                                <Group>
+                                                    <Input
+                                                        placeholder="Nome da tarefa"
+                                                        size="sm"
+                                                        mt={2}
+                                                        value={editValue}
+                                                        onChange={(evento) => setEditValue(evento.target.value)}
+                                                        
+                                                    />
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={editarTask}
+                                                    >
+                                                        Confirmar
+                                                    </Button>
+                                                </Group>
+                                                </Popover.Footer>
+                                        </Popover.Content>
+                                        </Popover.Positioner>
+                                    </Portal>
+                                </Popover.Root>
                                 <Button
-                                    background="blue"
+                                    background="red"
                                     color="white"
                                     variant="suble"
                                     size="xs"
-                                    onClick={() => handleEditButtonClick(i)}
+                                    onClick={() => {
+                                        excluirTask(indexPrimeiroItem + i);
+                                    }}
                                 >
-                                    <MdMode />
-                                    </Button>
-                                </Popover.Trigger>
-                                <Portal>
-                                    <Popover.Positioner>
-                                    <Popover.Content>
-                                        <Popover.Arrow />
-                                        <Popover.Body>
-                                        <Popover.Title fontWeight="medium">Editar Tarefa</Popover.Title>
-                                        </Popover.Body>
-                                        <Popover.Footer>
-                                            <Group>
-                                                <Input
-                                                    placeholder="Nome da tarefa"
-                                                    size="sm"
-                                                    mt={2}
-                                                    value={editValue}
-                                                    onChange={(evento) => setEditValue(evento.target.value)}
-                                                    
-                                                />
-                                                <Button
-                                                    size="sm"
-                                                    onClick={editarTask}
-                                                >
-                                                    Confirmar
-                                                </Button>
-                                            </Group>
-                                            </Popover.Footer>
-                                    </Popover.Content>
-                                    </Popover.Positioner>
-                                </Portal>
-                            </Popover.Root>
-                            <Button
-                                background="red"
-                                color="white"
-                                variant="suble"
-                                size="xs"
-                                onClick={() => {
-                                    excluirTask(indexPrimeiroItem + i);
-                                    trocaPage(i);
-                                }}
-                            >
-                                <MdDelete />
-                            </Button>
+                                    <MdDelete />
+                                </Button>
                             </Stack>
                         </Table.Cell>
                     </Table.Row>
