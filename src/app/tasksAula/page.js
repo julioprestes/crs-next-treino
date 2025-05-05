@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react"
 import { useState, useEffect } from "react";
 import DialogCreate from "@/components/DialogCreate";
+import SelectPage from "@/components/SelectPage";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -106,22 +107,30 @@ export default function Tasks() {
             'Tarefa'
           ]}
         />
-        <PaginationTabela
-          data={filteredTasks.length}
-          itemsPerPage={itemsPerPage}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
+        <Grid templateColumns="repeat(4, 1fr)">
+          <GridItem colSpan={3}>
+            <PaginationTabela
+              items={filteredTasks.length}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            />
+          </GridItem>
+          <GridItem ml={12} colSpan={1}>
+            <SelectPage
+              setItensPerPage={setItemsPerPage}
+              items={[
+                {name: 5, value: 5},
+                {name: 10, value: 10},
+                {name: 15, value: 15},
+                {name: 20, value: 20},
+                {name: 25, value: 25},
+              ]}
+            />
+          </GridItem>
+        </Grid>
       </Stack>
     </Box>
   )
 }
 
-const pageSizes = createListCollection({
-  items: [
-    { label: "2 itens", value: "2" },
-    { label: "5 itens", value: "5" },
-    { label: "10 itens", value: "10" },
-    { label: "20 itens", value: "20" },
-  ],
-});

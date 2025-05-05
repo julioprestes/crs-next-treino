@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react"
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
+import { toaster } from "@/components/ui/toaster"
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -21,22 +22,26 @@ export default function Tasks() {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [loadingSave, SetLoadingSave] = useState(false);
   
 
-  useEffect(() => {
-    const buscarCargo = async () => {
+  
+  const buscarCargo = async () => {
       try {
         const response = await api.get('/cargo')
         setTasks(response.data.data)
       } catch (error) {
         
       }
-    }
+  }
+  
+  useEffect(() => {
     buscarCargo();
   }, [])
+  
+
 
   const filteredTasks = tasks.filter(task =>
     task.descricao.toLowerCase().includes(searchTerm.toLowerCase())
@@ -49,37 +54,70 @@ export default function Tasks() {
   const indexPrimeiroItem = indexUltimoItem - itemsPerPage;
   const tasksAtuais = filteredTasks.slice(indexPrimeiroItem, indexUltimoItem)
 
-  const closeDialog = () => {
-    setOpenDialog(false)
-  }
-
-  const criarTask = () => {
-    if (!input.trim()) return;
-    if (editingIndex !== null) {
-      const tasksAtualizadas = [...tasks]
-      tasksAtualizadas[editingIndex] = input
-      setTasks(tasksAtualizadas)
-      setEditingIndex(null)
-    } else {
-      setTasks([...tasks, input]);
+  const criarTask = async () => {
+    try {
+      SetLoadingSave(true)
+      if (!input.trim()) return;
+      if (editingIndex !== null) {
+        const response = await api.patch(`/cargo/${editingIndex}`, {
+          descricao: input,
+        });
+        await buscarCargo();
+        setInput('');
+      } else {
+        const response = await api.post('/cargo', {
+          descricao: input,
+        });
+        toaster.create({
+          title: 'Cargo criado com sucesso.',
+          type: 'success'
+        })
+        await buscarCargo();
+      }
+      setIsDialogOpen(false)
+      setInput('');
+      SetLoadingSave(false)
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+      toaster.create({
+        title: error.response?.data?.message || 'Erro ao criar cargo.',
+        type: 'error'
+      });
+      SetLoadingSave(false);
     }
-    closeDialog();
-    setInput('');
   }
 
   const editarTask = (index) => {
-    setInput(tasksAtuais[index]);
-    setEditingIndex(tasks.indexOf(tasksAtuais[index]));
-    setOpenDialog(true)
+    const taskEditar = tasksAtuais[index];
+    setInput(taskEditar.descricao);
+    setEditingIndex(taskEditar.id);
+    setIsDialogOpen(true)
   };
 
-  const excluirTask = (index) => {
-    const taskDeletar = tasksAtuais[index];
-    const taskExcluido = tasks.filter(task => task !== taskDeletar);
-    if (tasksAtuais.length === 1 && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+  const excluirTask = async (index) => {
+    try {
+      if (confirm("Deseja excluir o cargo?")) {
+        const taskDeletar = tasksAtuais[index];
+      await api.delete(`/cargo/${taskDeletar.id}`); 
+      const taskExcluido = tasks.filter(cargo => cargo.id !== taskDeletar.id);
+      if (tasksAtuais.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+      toaster.create({
+        title: 'Cargo excluido com sucesso.',
+        type: 'success'
+      })
+      setTasks(taskExcluido);
+      } else {
+
+      }
+    } catch (error) {
+      toaster.create({
+        title: 'Erro ao criar cargo.',
+        type: 'error'
+      })
     }
-    setTasks(taskExcluido);
+    
   }
 
   return (
@@ -100,11 +138,11 @@ export default function Tasks() {
             mb={4}
             l={2}
         > 
-            Criar
+            Criar Cargo
         </Button>
         <DialogCreate
-            headers={[editingIndex !== null ? 'Editar Tarefa' : 'Criar Tarefa']}
-            buttonName={[editingIndex !== null ? 'Editar Tarefa' : 'Criar Tarefa']}
+            headers={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
+            buttonName={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
             input={input}
             setInput={setInput}
             submit={criarTask}
@@ -114,6 +152,7 @@ export default function Tasks() {
               setIsDialogOpen(false);
               setEditingIndex(null);
             }}
+            loadingSave={loadingSave}
         />
         </GridItem>
       </Grid>

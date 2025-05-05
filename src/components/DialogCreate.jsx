@@ -10,6 +10,7 @@ export default function DialogCreate ({
   editingIndex,
   isOpen,
   onClose,
+  loadingSave
 }) {
   return (
     <Dialog.Root open={isOpen} onClose={onClose}>
@@ -25,7 +26,7 @@ export default function DialogCreate ({
             <Dialog.Body>
               <Flex mb={4}>
                 <Input
-                  placeholder="Digite o nome de uma tarefa!"
+                  placeholder="Digite o nome de um Cargo!"
                   variant="subtle"
                   mr={2}
                   value={input}
@@ -38,6 +39,8 @@ export default function DialogCreate ({
                   }}
                   background="green"
                   color="white"
+                  loading ={loadingSave}
+                  loadingText="Salvando..."
                 >
                   {editingIndex !== null ? <MdCheck /> : <MdAdd />}
                 </Button>
@@ -52,3 +55,5 @@ export default function DialogCreate ({
     </Dialog.Root>
   )
 }
+
+
