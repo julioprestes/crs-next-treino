@@ -8,16 +8,17 @@ export default function TabelaCrud({items, headers, onEdit, onDelete, acoes}) {
       <Table.Header>
         <Table.Row>
           {headers.map((header, i) => (
-            <Table.ColumnHeader key={i}>{header}</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="center" key={i}>{header.name}</Table.ColumnHeader>
           ))}
           <Table.ColumnHeader textAlign="center"></Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {items.map((cargo, i) => (
-          <Table.Row key={i}>
-            <Table.Cell>{cargo.id}</Table.Cell>
-            <Table.Cell>{cargo.descricao}</Table.Cell>
+        {items.map((cargo) => (
+          <Table.Row key={cargo.id}>
+            {headers.map((header, i) => (
+              <Table.Cell key={i} textAlign="center">{cargo[header.value]}</Table.Cell>
+            ))}
             <Table.Cell textAlign="center">
               {acoes && (<Stack direction="row">
                 <Tooltip content="Editar">
@@ -26,7 +27,7 @@ export default function TabelaCrud({items, headers, onEdit, onDelete, acoes}) {
                     color="white"
                     variant="subtle"
                     size="xs"
-                    onClick={() => onEdit(i)}
+                    onClick={() => onEdit(cargo)}
                   >
                     <MdMode />
                   </Button>
@@ -37,12 +38,11 @@ export default function TabelaCrud({items, headers, onEdit, onDelete, acoes}) {
                     color="white"
                     variant="subtle"
                     size="xs"
-                    onClick={() => onDelete(i)}
+                    onClick={() => onDelete(cargo.id)}
                   >
                     <MdDelete />
                   </Button>
                 </Tooltip>
-                
               </Stack>)}
             </Table.Cell>
           </Table.Row>

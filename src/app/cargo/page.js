@@ -26,8 +26,6 @@ export default function Tasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingSave, SetLoadingSave] = useState(false);
   
-
-  
   const buscarCargo = async () => {
       try {
         const response = await api.get('/cargo')
@@ -41,8 +39,6 @@ export default function Tasks() {
     buscarCargo();
   }, [])
   
-
-
   const filteredTasks = tasks.filter(task =>
     task.descricao.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -108,8 +104,6 @@ export default function Tasks() {
         type: 'success'
       })
       setTasks(taskExcluido);
-      } else {
-
       }
     } catch (error) {
       toaster.create({
@@ -117,7 +111,6 @@ export default function Tasks() {
         type: 'error'
       })
     }
-    
   }
 
   return (
@@ -131,29 +124,29 @@ export default function Tasks() {
           />
         </GridItem>
         <GridItem>
-        <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setIsDialogOpen(true)} 
-            mb={4}
-            l={2}
-        > 
-            Criar Cargo
-        </Button>
-        <DialogCreate
-            headers={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
-            buttonName={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
-            input={input}
-            setInput={setInput}
-            submit={criarTask}
-            editingIndex={editingIndex}
-            isOpen={isDialogOpen}
-            onClose={() => {
-              setIsDialogOpen(false);
-              setEditingIndex(null);
-            }}
-            loadingSave={loadingSave}
-        />
+          <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsDialogOpen(true)} 
+              mb={4}
+              l={2}
+          > 
+              Criar Cargo
+          </Button>
+          <DialogCreate
+              headers={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
+              buttonName={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
+              input={input}
+              setInput={setInput}
+              submit={criarTask}
+              editingIndex={editingIndex}
+              isOpen={isDialogOpen}
+              onClose={() => {
+                setIsDialogOpen(false);
+                setEditingIndex(null);
+              }}
+              loadingSave={loadingSave}
+          />
         </GridItem>
       </Grid>
       <Stack style={{display: 'flex', alignItems: 'center'}}>
@@ -163,8 +156,8 @@ export default function Tasks() {
           onDelete={excluirTask}
           acoes={true}
           headers={[
-            'ID',
-            'Descrição'
+            {name: 'ID', value: 'id'},
+            {name: 'Descrição', value: 'descricao'},
           ]}
         />
         <Grid templateColumns="repeat(4, 1fr)">
