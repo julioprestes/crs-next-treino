@@ -89,10 +89,10 @@ export default function Tasks() {
     setIsDialogOpen(true)
   };
 
-  const excluirTask = async (index) => {
+  const excluirTask = async (id) => {
     try {
       if (confirm("Deseja excluir o cargo?")) {
-        const taskDeletar = tasksAtuais[index];
+      const taskDeletar = tasks.find((task) => task.id === id);
       await api.delete(`/cargo/${taskDeletar.id}`); 
       const taskExcluido = tasks.filter(cargo => cargo.id !== taskDeletar.id);
       if (tasksAtuais.length === 1 && currentPage > 1) {
@@ -106,7 +106,7 @@ export default function Tasks() {
       }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao criar cargo.',
+        title: 'Erro ao excluir cargo.',
         type: 'error'
       })
     }

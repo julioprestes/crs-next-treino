@@ -2,7 +2,7 @@
 import InputPesquisa from "@/components/InputPesquisa";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
-import DialogUsuario from "@/components/DialogUsuario";
+import DialogFilme from "@/components/DialogFilme";
 import SelectPage from "@/components/SelectPage";
 import { 
   Box,
@@ -19,21 +19,20 @@ import { toaster } from "@/components/ui/toaster"
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState('');
-  const [email, setEmail] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [idCargo, setIdCargo] = useState('');
-  const [senha, setSenha] = useState('');
-  const [isEstudante, setIsEstudante] = useState('');
+  const [descricao, setDescricao] = useState('');
+  const [autor, setAutor] = useState('');
+  const [duracao, setDuracao] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingSave, SetLoadingSave] = useState(false);
+  const [file, setFile] = useState(null);
   
-  const buscarUsuario = async () => {
+  const buscarFilme = async () => {
       try {
-        const response = await api.get('/usuario')
+        const response = await api.get('/filme')
         setTasks(response.data.data)
       } catch (error) {
         
@@ -41,7 +40,7 @@ export default function Tasks() {
   }
   
   useEffect(() => {
-    buscarUsuario();
+    buscarFilme();
   }, [])
   
   const filteredTasks = tasks.filter(task =>
@@ -57,56 +56,68 @@ export default function Tasks() {
 
   const criarTask = async () => {
     try {
-      SetLoadingSave(true)
-      if (!input.trim()) return;
-      if (editingIndex !== null) {
-        const response = await api.patch(`/usuario/${editingIndex}`, {
-            nome: input,
-            email: email,
-            cpf: cpf,
-            idCargo: idCargo,
-            password: senha,
-            estudante: isEstudante,
-        });
-        await buscarUsuario();
-        setInput('');
-        setEmail('');
-        setCpf('');
-        setIdCargo('');
-        setIsEstudante(false);
-        setSenha('');
-      } else {
-        const response = await api.post('/usuario', {
-            nome: input,
-            email: email,
-            cpf: cpf,
-            idCargo: idCargo,
-            password: senha,
-            estudante: isEstudante,
-        });
-        toaster.create({
-          title: 'Usuario criado com sucesso.',
-          type: 'success'
-        })
-        await buscarUsuario();
-      }
-      setIsDialogOpen(false)
-      setInput('');
-      setEmail('');
-      setCpf('');
-      setIdCargo('');
-      setIsEstudante(false);
-      setSenha('');
-      SetLoadingSave(false)
+        SetLoadingSave(true);
+
+        // Verifica se o nome está preenchido
+        if (!input.trim()) {
+            toaster.create({
+                title: "O nome do filme é obrigatório.",
+                type: "error",
+            });
+            SetLoadingSave(false);
+            return;
+        }
+
+        // Cria o FormData e adiciona os campos
+        const formData = new FormData();
+        formData.append("nome", input);
+        formData.append("descricao", descricao);
+        formData.append("autor", autor);
+        formData.append("duracao", duracao);
+
+        // Adiciona o arquivo (imagem) ao FormData, se existir
+        if (file) {
+            formData.append("arquivo", file);
+        }
+
+        if (editingIndex !== null) {
+            // Atualização
+            formData.append("_method", "PATCH");
+            const response = await api.post(`/filme/${editingIndex}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            toaster.create({
+                title: "Filme atualizado com sucesso.",
+                type: "success",
+            });
+            await buscarFilme();
+        } else {
+            const response = await api.post("/filme", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            toaster.create({
+                title: "Filme criado com sucesso.",
+                type: "success",
+            });
+            await buscarFilme();
+        }
+
+        setIsDialogOpen(false);
+        setInput("");
+        setDescricao("");
+        setAutor("");
+        setDuracao("");
+        setFile(null); 
+        SetLoadingSave(false);
     } catch (error) {
-      console.log(error.response?.data || error.message);
-      toaster.create({
-        title: error.response?.data?.message || 'Erro ao criar usuario.',
-        type: 'error'
-      });
-      SetLoadingSave(false);
+        console.log(error.response?.data || error.message);
+        toaster.create({
+            title: error.response?.data?.message || "Erro ao salvar o filme.",
+            type: "error",
+        });
+        SetLoadingSave(false);
     }
-  }
+  };
 
   const editarTask = (taskEditar) => {
     console.log("Task recebida:", taskEditar);
@@ -117,40 +128,43 @@ export default function Tasks() {
     }
   
     setInput(taskEditar.nome || '');
-    setSenha(taskEditar.senha || '');
-    setEmail(taskEditar.email || '');
-    setCpf(taskEditar.cpf || '');
-    setIdCargo(taskEditar.idCargo || '');
+    setDescricao(taskEditar.descricao || '');
+    setAutor(taskEditar.autor || '');
+    setDuracao(taskEditar.duracao || '');
+    setFile(null);
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
   };
 
   const excluirTask = async (id) => {
     try {
-        if (confirm("Deseja excluir o usuario?")) {
+        console.log("ID recebido para exclusão:", id);
+        if (confirm("Deseja excluir o filme?")) {
         const taskDeletar = tasks.find((task) => task.id === id);
-        await api.delete(`/usuario/${taskDeletar.id}`); 
-        const taskExcluido = tasks.filter(usuario => usuario.id !== taskDeletar.id);
+        await api.delete(`/filme/${taskDeletar.id}`); 
+        const taskExcluido = tasks.filter(filme => filme.id !== taskDeletar.id);
         if (tasksAtuais.length === 1 && currentPage > 1) {
             setCurrentPage(currentPage - 1);
         }
         toaster.create({
-            title: 'Usuario excluido com sucesso.',
+            title: 'Filme excluido com sucesso.',
             type: 'success'
         })
         setTasks(taskExcluido);
         }
-    } catch (error) {
-      toaster.create({
-        title: 'Erro ao excluir usuario.',
-        type: 'error'
-      })
+        } catch (error) {
+        toaster.create({
+            title: 'Erro ao excluir filme.',
+            type: 'error'
+        })
+        console.log(error);
+      
     }
   }
 
   return (
     <Box p={8}>
-      <Heading mb={4}> CRUD usuarios </Heading>
+      <Heading mb={4}> CRUD filmes </Heading>
       <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
         <GridItem colSpan={3} ml={9}>
           <InputPesquisa
@@ -166,23 +180,21 @@ export default function Tasks() {
               mb={4}
               l={2}
           > 
-              Criar usuario
+              Criar filme
           </Button>
-          <DialogUsuario
-              headers={[editingIndex !== null ? 'Editar usuario' : 'Criar usuario']}
-              buttonName={[editingIndex !== null ? 'Editar usuario' : 'Criar usuario']}
+          <DialogFilme
+              headers={[editingIndex !== null ? 'Editar filme' : 'Criar filme']}
+              buttonName={[editingIndex !== null ? 'Editar filme' : 'Criar filme']}
               input={input}
               setInput={setInput}
-              senha={senha}
-              setSenha={setSenha}
-              email={email}
-              setEmail={setEmail}
-              cpf={cpf}
-              setCpf={setCpf}
-              isEstudante={isEstudante}
-              setIsEstudante={setIsEstudante}
-              idCargo={idCargo}
-              setIdCargo={setIdCargo}
+              file={file}
+              setDescricao={setDescricao}
+              descricao={descricao}
+              autor={autor}
+              setAutor={setAutor}
+              duracao={duracao}
+              setDuracao={setDuracao}
+              setFile={setFile}
               submit={criarTask}
               editingIndex={editingIndex}
               isOpen={isDialogOpen}
@@ -191,10 +203,6 @@ export default function Tasks() {
                 setEditingIndex(null);
               }}
               loadingSave={loadingSave}
-              items={[
-                { label: "Sim", value: true },
-                { label: "Não", value: false },
-              ]}
           />
         </GridItem>
       </Grid>
@@ -207,10 +215,10 @@ export default function Tasks() {
           headers={[
             {name: 'ID', value: 'id'},
             {name: 'Nome', value: 'nome'},
-            {name: 'Email', value: 'email'},
-            {name: 'CPF', value: 'cpf'},
-            {name: 'Estudante', value: 'estudante'},
-            {name: 'ID Cargo', value: 'idCargo'}
+            {name: 'Duração', value: 'duracao'},
+            {name: 'Autor', value: 'autor'},
+            {name: 'Descrição', value: 'descricao'},
+            {name: 'Caminho da Imagem', value: 'imagemLink'}
           ]}
         />
         <Grid templateColumns="repeat(4, 1fr)">
