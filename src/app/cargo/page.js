@@ -15,6 +15,8 @@ import {
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
 import { toaster } from "@/components/ui/toaster"
+import { verificarToken } from "@/middleware/verificarToken";
+import { useRouter } from 'next/navigation';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -26,6 +28,7 @@ export default function Tasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingSave, SetLoadingSave] = useState(false);
   
+  
   const buscarCargo = async () => {
       try {
         const response = await api.get('/cargo')
@@ -34,10 +37,21 @@ export default function Tasks() {
         
       }
   }
+
+  const router = useRouter();
   
   useEffect(() => {
-    buscarCargo();
-  }, [])
+    const validarToken = async () => {
+      const valido = await verificarToken();
+      if (!valido) {
+        router.push('/');
+      } else {
+        await buscarCargo();
+      }
+    };
+
+    validarToken();
+  }, []);
   
   const filteredTasks = tasks.filter(task =>
     task.descricao.toLowerCase().includes(searchTerm.toLowerCase())

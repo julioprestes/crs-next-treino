@@ -3,7 +3,7 @@ import { MdCheck, MdAdd } from 'react-icons/md'
 import { withMask } from "use-mask-input"
 import { PasswordInput } from "@/components/ui/password-input"
 
-export default function DialogCreate ({
+export default function DialogUsuario ({
     headers,
     input,
     setInput,
@@ -22,7 +22,6 @@ export default function DialogCreate ({
     loadingSave,
     isEstudante,
     setIsEstudante,
-    items
 }) {
   return (
     <Dialog.Root open={isOpen} onClose={onClose}>
@@ -76,8 +75,12 @@ export default function DialogCreate ({
                 <VStack align="start">
                   <Text>É estudante?</Text>
                   <RadioGroup.Root 
-                    value={isEstudante ? true : false}
-                    onValueChange={(valor) => setIsEstudante(valor === true)}
+                    value={isEstudante ? "true" : "false"}
+                    onValueChange={(valor) => {
+                      const selectedValue = valor.value || valor;
+                      console.log("Valor selecionado:", selectedValue); 
+                      setIsEstudante(selectedValue === "true"); 
+                    }}
                   >
                     <HStack gap="6">
                       {items.map((item) => (
@@ -117,8 +120,8 @@ export default function DialogCreate ({
 }
 
 const items = [
-  { label: "Sim", value: true },
-  { label: "Não", value: false },
+  { label: "Sim", value: "true" },
+  { label: "Não", value: "false" },
 ]
 
 

@@ -2,7 +2,7 @@
 import InputPesquisa from "@/components/InputPesquisa";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
-import DialogUsuario from "@/components/DialogUsuario";
+import DialogPadrao from "@/components/DialogPadrao";
 import SelectPage from "@/components/SelectPage";
 import { 
   Box,
@@ -18,12 +18,7 @@ import { toaster } from "@/components/ui/toaster"
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
-  const [input, setInput] = useState('');
-  const [email, setEmail] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [idCargo, setIdCargo] = useState('');
-  const [senha, setSenha] = useState('');
-  const [isEstudante, setIsEstudante] = useState('');
+  const [input, setInput] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -31,9 +26,9 @@ export default function Tasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingSave, SetLoadingSave] = useState(false);
   
-  const buscarUsuario = async () => {
+  const buscarPadrao = async () => {
       try {
-        const response = await api.get('/usuario')
+        const response = await api.get('/padrao')
         setTasks(response.data.data)
       } catch (error) {
         
@@ -41,11 +36,11 @@ export default function Tasks() {
   }
   
   useEffect(() => {
-    buscarUsuario();
+    buscarPadrao();
   }, [])
   
   const filteredTasks = tasks.filter(task =>
-    task.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    task.id.toString().includes(searchTerm.toLowerCase())
   );
   useEffect(() => {
     setCurrentPage(1);
@@ -57,92 +52,70 @@ export default function Tasks() {
 
   const criarTask = async () => {
     try {
-      SetLoadingSave(true)
-      if (!input.trim()) return;
+      SetLoadingSave(true);
+      if (!input.length) return;
+  
       if (editingIndex !== null) {
-        const response = await api.patch(`/usuario/${editingIndex}`, {
-            nome: input,
-            email: email,
-            cpf: cpf,
-            idCargo: idCargo,
-            password: senha,
-            estudante: isEstudante,
-        });
-        console.log("Valor de isEstudante enviado:", isEstudante);
-        await buscarUsuario();
-        setInput('');
-        setEmail('');
-        setCpf('');
-        setIdCargo('');
-        setIsEstudante(false);
-        setSenha('');
-      } else {
-        const response = await api.post('/usuario', {
-            nome: input,
-            email: email,
-            cpf: cpf,
-            idCargo: idCargo,
-            password: senha,
-            estudante: isEstudante,
+        await api.patch(`/padrao/${editingIndex}`, {
+          lugares: input,
         });
         toaster.create({
-          title: 'Usuario criado com sucesso.',
-          type: 'success'
-        })
-        await buscarUsuario();
+          title: "Padrão atualizado com sucesso.",
+          type: "success",
+        });
+      } else {
+        await api.post("/padrao", {
+          lugares: input,
+        });
+        toaster.create({
+          title: "Padrão criado com sucesso.",
+          type: "success",
+        });
       }
-      setIsDialogOpen(false)
-      setInput('');
-      setEmail('');
-      setCpf('');
-      setIdCargo('');
-      setSenha('');
-      SetLoadingSave(false)
+  
+      await buscarPadrao();
+      setIsDialogOpen(false);
+      setInput([]);
+      SetLoadingSave(false);
     } catch (error) {
-      console.log(error.response?.data || error.message);
+      console.error(error.response?.data || error.message);
       toaster.create({
-        title: error.response?.data?.message || 'Erro ao criar usuario.',
-        type: 'error'
+        title: error.response?.data?.message || "Erro ao salvar padrão.",
+        type: "error",
       });
       SetLoadingSave(false);
     }
-  }
+  };
 
   const editarTask = (taskEditar) => {
-    console.log("Task recebida:", taskEditar);
-  
     if (!taskEditar) {
       console.error("Task não encontrada ou inválida.");
       return;
     }
   
-    setInput(taskEditar.nome || '');
-    setSenha(taskEditar.senha || '');
-    setEmail(taskEditar.email || '');
-    setCpf(taskEditar.cpf || '');
-    setIdCargo(taskEditar.idCargo || '');
+    setInput(Array.isArray(taskEditar.lugares) ? taskEditar.lugares : []); // Garante que seja um array
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
   };
 
   const excluirTask = async (id) => {
     try {
-        if (confirm("Deseja excluir o usuario?")) {
+        if (confirm("Deseja excluir o padrao?")) {
         const taskDeletar = tasks.find((task) => task.id === id);
-        await api.delete(`/usuario/${taskDeletar.id}`); 
-        const taskExcluido = tasks.filter(usuario => usuario.id !== taskDeletar.id);
+        await api.delete(`/padrao/${taskDeletar.id}`); 
+        const taskExcluido = tasks.filter(padrao => padrao.id !== taskDeletar.id);
         if (tasksAtuais.length === 1 && currentPage > 1) {
             setCurrentPage(currentPage - 1);
         }
         toaster.create({
-            title: 'Usuario excluido com sucesso.',
+            title: 'Padrao excluido com sucesso.',
             type: 'success'
         })
         setTasks(taskExcluido);
         }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao excluir usuario.',
+        title: 'Erro ao excluir padrao.',
         type: 'error'
       })
     }
@@ -150,7 +123,7 @@ export default function Tasks() {
 
   return (
     <Box p={8}>
-      <Heading mb={4}> CRUD usuarios </Heading>
+      <Heading mb={4}> CRUD Padrão Lugares </Heading>
       <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
         <GridItem colSpan={3} ml={9}>
           <InputPesquisa
@@ -166,23 +139,13 @@ export default function Tasks() {
               mb={4}
               l={2}
           > 
-              Criar usuario
+              Criar padrao
           </Button>
-          <DialogUsuario
-              headers={[editingIndex !== null ? 'Editar usuario' : 'Criar usuario']}
-              buttonName={[editingIndex !== null ? 'Editar usuario' : 'Criar usuario']}
+          <DialogPadrao
+              headers={[editingIndex !== null ? 'Editar padrao' : 'Criar padrao']}
+              buttonName={[editingIndex !== null ? 'Editar padrao' : 'Criar padrao']}
               input={input}
               setInput={setInput}
-              senha={senha}
-              setSenha={setSenha}
-              email={email}
-              setEmail={setEmail}
-              cpf={cpf}
-              setCpf={setCpf}
-              isEstudante={isEstudante}
-              setIsEstudante={setIsEstudante}
-              idCargo={idCargo}
-              setIdCargo={setIdCargo}
               submit={criarTask}
               editingIndex={editingIndex}
               isOpen={isDialogOpen}
@@ -196,21 +159,17 @@ export default function Tasks() {
       </Grid>
       <Stack style={{display: 'flex', alignItems: 'center'}}>
         <TabelaCrud
-          items={tasksAtuais.map(task => ({
-    ...task,
-    estudante: task.estudante ? 'Sim' : 'Não',
-  }))}
-          onEdit={editarTask}
-          onDelete={excluirTask}
-          acoes={true}
-          headers={[
-            {name: 'ID', value: 'id'},
-            {name: 'Nome', value: 'nome'},
-            {name: 'Email', value: 'email'},
-            {name: 'CPF', value: 'cpf'},
-            {name: 'Estudante', value: 'estudante'},
-            {name: 'ID Cargo', value: 'idCargo'}
-          ]}
+            items={tasksAtuais.map(task => ({
+                ...task,
+                lugares: task.lugares.map(l => `Lugar: ${l.lugar}, Linha: ${l.linha}, Coluna: ${l.coluna}`).join("; "),
+            }))}
+            onEdit={editarTask}
+            onDelete={excluirTask}
+            acoes={true}
+            headers={[
+                { name: "ID", value: "id" },
+                { name: "Lugares", value: "lugares" },
+            ]}
         />
         <Grid templateColumns="repeat(4, 1fr)">
           <GridItem colSpan={3}>

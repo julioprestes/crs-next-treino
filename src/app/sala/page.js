@@ -2,7 +2,7 @@
 import InputPesquisa from "@/components/InputPesquisa";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
-import DialogUsuario from "@/components/DialogUsuario";
+import DialogSala from "@/components/DialogSala";
 import SelectPage from "@/components/SelectPage";
 import { 
   Box,
@@ -19,11 +19,7 @@ import { toaster } from "@/components/ui/toaster"
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState('');
-  const [email, setEmail] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [idCargo, setIdCargo] = useState('');
-  const [senha, setSenha] = useState('');
-  const [isEstudante, setIsEstudante] = useState('');
+  const [idPadraoLugares, setIdPadraoLugares] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -31,9 +27,9 @@ export default function Tasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingSave, SetLoadingSave] = useState(false);
   
-  const buscarUsuario = async () => {
+  const buscarSala = async () => {
       try {
-        const response = await api.get('/usuario')
+        const response = await api.get('/sala')
         setTasks(response.data.data)
       } catch (error) {
         
@@ -41,11 +37,11 @@ export default function Tasks() {
   }
   
   useEffect(() => {
-    buscarUsuario();
+    buscarSala();
   }, [])
   
   const filteredTasks = tasks.filter(task =>
-    task.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    task.observacao.toLowerCase().includes(searchTerm.toLowerCase())
   );
   useEffect(() => {
     setCurrentPage(1);
@@ -60,48 +56,33 @@ export default function Tasks() {
       SetLoadingSave(true)
       if (!input.trim()) return;
       if (editingIndex !== null) {
-        const response = await api.patch(`/usuario/${editingIndex}`, {
-            nome: input,
-            email: email,
-            cpf: cpf,
-            idCargo: idCargo,
-            password: senha,
-            estudante: isEstudante,
+        const response = await api.patch(`/sala/${editingIndex}`, {
+            observacao: input,
+            idPadraoLugares: idPadraoLugares,
+
         });
-        console.log("Valor de isEstudante enviado:", isEstudante);
-        await buscarUsuario();
+        await buscarSala();
         setInput('');
-        setEmail('');
-        setCpf('');
-        setIdCargo('');
-        setIsEstudante(false);
-        setSenha('');
+        setIdPadraoLugares('');
       } else {
-        const response = await api.post('/usuario', {
-            nome: input,
-            email: email,
-            cpf: cpf,
-            idCargo: idCargo,
-            password: senha,
-            estudante: isEstudante,
+        const response = await api.post('/sala', {
+            observacao: input,
+            idPadraoLugares: idPadraoLugares,
         });
         toaster.create({
-          title: 'Usuario criado com sucesso.',
+          title: 'Sala criada com sucesso.',
           type: 'success'
         })
-        await buscarUsuario();
+        await buscarSala();
       }
       setIsDialogOpen(false)
       setInput('');
-      setEmail('');
-      setCpf('');
-      setIdCargo('');
-      setSenha('');
+      setIdPadraoLugares('');
       SetLoadingSave(false)
     } catch (error) {
       console.log(error.response?.data || error.message);
       toaster.create({
-        title: error.response?.data?.message || 'Erro ao criar usuario.',
+        title: error.response?.data?.message || 'Erro ao criar sala.',
         type: 'error'
       });
       SetLoadingSave(false);
@@ -116,33 +97,30 @@ export default function Tasks() {
       return;
     }
   
-    setInput(taskEditar.nome || '');
-    setSenha(taskEditar.senha || '');
-    setEmail(taskEditar.email || '');
-    setCpf(taskEditar.cpf || '');
-    setIdCargo(taskEditar.idCargo || '');
+    setInput(taskEditar.observacao || '');
+    setIdPadraoLugares(taskEditar.idPadraoLugares || '');
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
   };
 
   const excluirTask = async (id) => {
     try {
-        if (confirm("Deseja excluir o usuario?")) {
+        if (confirm("Deseja excluir a sala?")) {
         const taskDeletar = tasks.find((task) => task.id === id);
-        await api.delete(`/usuario/${taskDeletar.id}`); 
-        const taskExcluido = tasks.filter(usuario => usuario.id !== taskDeletar.id);
+        await api.delete(`/sala/${taskDeletar.id}`); 
+        const taskExcluido = tasks.filter(sala => sala.id !== taskDeletar.id);
         if (tasksAtuais.length === 1 && currentPage > 1) {
             setCurrentPage(currentPage - 1);
         }
         toaster.create({
-            title: 'Usuario excluido com sucesso.',
+            title: 'Sala excluida com sucesso.',
             type: 'success'
         })
         setTasks(taskExcluido);
         }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao excluir usuario.',
+        title: 'Erro ao excluir sala.',
         type: 'error'
       })
     }
@@ -150,7 +128,7 @@ export default function Tasks() {
 
   return (
     <Box p={8}>
-      <Heading mb={4}> CRUD usuarios </Heading>
+      <Heading mb={4}> CRUD salas </Heading>
       <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
         <GridItem colSpan={3} ml={9}>
           <InputPesquisa
@@ -166,23 +144,15 @@ export default function Tasks() {
               mb={4}
               l={2}
           > 
-              Criar usuario
+              Criar sala
           </Button>
-          <DialogUsuario
-              headers={[editingIndex !== null ? 'Editar usuario' : 'Criar usuario']}
-              buttonName={[editingIndex !== null ? 'Editar usuario' : 'Criar usuario']}
+          <DialogSala
+              headers={[editingIndex !== null ? 'Editar sala' : 'Criar sala']}
+              buttonName={[editingIndex !== null ? 'Editar sala' : 'Criar sala']}
               input={input}
               setInput={setInput}
-              senha={senha}
-              setSenha={setSenha}
-              email={email}
-              setEmail={setEmail}
-              cpf={cpf}
-              setCpf={setCpf}
-              isEstudante={isEstudante}
-              setIsEstudante={setIsEstudante}
-              idCargo={idCargo}
-              setIdCargo={setIdCargo}
+              idPadraoLugares={idPadraoLugares}
+              setIdPadraoLugares={setIdPadraoLugares}
               submit={criarTask}
               editingIndex={editingIndex}
               isOpen={isDialogOpen}
@@ -196,20 +166,14 @@ export default function Tasks() {
       </Grid>
       <Stack style={{display: 'flex', alignItems: 'center'}}>
         <TabelaCrud
-          items={tasksAtuais.map(task => ({
-    ...task,
-    estudante: task.estudante ? 'Sim' : 'Não',
-  }))}
+          items={tasksAtuais}
           onEdit={editarTask}
           onDelete={excluirTask}
           acoes={true}
           headers={[
             {name: 'ID', value: 'id'},
-            {name: 'Nome', value: 'nome'},
-            {name: 'Email', value: 'email'},
-            {name: 'CPF', value: 'cpf'},
-            {name: 'Estudante', value: 'estudante'},
-            {name: 'ID Cargo', value: 'idCargo'}
+            {name: 'Observação', value: 'observacao'},
+            {name: 'ID Padrão Lugares', value: 'idPadraoLugares'},
           ]}
         />
         <Grid templateColumns="repeat(4, 1fr)">

@@ -4,7 +4,7 @@ import { HiUpload } from "react-icons/hi";
 import { MdCheck, MdAdd } from "react-icons/md";
 import { FileUpload } from "@chakra-ui/react";
 
-export default function DialogCreate ({
+export default function DialogFilme ({
     headers,
     input,
     setInput,
@@ -16,6 +16,7 @@ export default function DialogCreate ({
     setDuracao,
     file,
     setFile,
+    imagemAtual,
     submit,
     editingIndex,
     isOpen,

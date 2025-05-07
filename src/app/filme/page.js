@@ -11,6 +11,7 @@ import {
   Button,
   Grid,
   GridItem,
+  Image
 } from "@chakra-ui/react"
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
@@ -58,32 +59,28 @@ export default function Tasks() {
     try {
         SetLoadingSave(true);
 
-        // Verifica se o nome está preenchido
         if (!input.trim()) {
             toaster.create({
-                title: "O nome do filme é obrigatório.",
+                title: "Filme sem nome.",
                 type: "error",
             });
             SetLoadingSave(false);
             return;
         }
 
-        // Cria o FormData e adiciona os campos
         const formData = new FormData();
         formData.append("nome", input);
         formData.append("descricao", descricao);
         formData.append("autor", autor);
         formData.append("duracao", duracao);
 
-        // Adiciona o arquivo (imagem) ao FormData, se existir
         if (file) {
             formData.append("arquivo", file);
         }
 
         if (editingIndex !== null) {
-            // Atualização
             formData.append("_method", "PATCH");
-            const response = await api.post(`/filme/${editingIndex}`, formData, {
+            const response = await api.patch(`/filme/${editingIndex}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             toaster.create({
@@ -208,7 +205,17 @@ export default function Tasks() {
       </Grid>
       <Stack style={{display: 'flex', alignItems: 'center'}}>
         <TabelaCrud
-          items={tasksAtuais}
+          items={tasksAtuais.map(task => ({
+            ...task,
+            imagemLink: (
+              <Image
+                rounded="md"
+                src={`http://localhost:3333${task.imagemLink.replace(/^.*\/public/, '')}`} 
+                alt={`Capa do filme ${task.nome}`} 
+                style={{ width: '70px', height: '100px', objectFit: 'cover' }} 
+              />
+            )
+          }))}
           onEdit={editarTask}
           onDelete={excluirTask}
           acoes={true}
@@ -218,7 +225,7 @@ export default function Tasks() {
             {name: 'Duração', value: 'duracao'},
             {name: 'Autor', value: 'autor'},
             {name: 'Descrição', value: 'descricao'},
-            {name: 'Caminho da Imagem', value: 'imagemLink'}
+            {name: 'Imagem da Capa', value: 'imagemLink'}
           ]}
         />
         <Grid templateColumns="repeat(4, 1fr)">
