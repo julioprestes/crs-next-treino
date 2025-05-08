@@ -10,11 +10,14 @@ import { FaLock } from "react-icons/fa";
 import React from 'react';
 import { useState, useEffect } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster"
+import { useRouter } from "next/navigation"; // Importa o roteador do Next.js
+
 
 export default function LoginInput({ mandarDadosdofilho }) {
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const content = { email: Email, password: Password };
+  const router = useRouter();
 
   const mandarDados = async () => {
     if (!Password || !Email) {
@@ -25,6 +28,10 @@ export default function LoginInput({ mandarDadosdofilho }) {
       return;
     }
     mandarDadosdofilho(content);
+  };
+
+  const cadastrarDados = async () => {
+    router.push("/cadastro")
   };
 
   useEffect(() => {
@@ -73,6 +80,8 @@ export default function LoginInput({ mandarDadosdofilho }) {
       </Button>
       <Text m="0" mt="1%" mb="1%" textAlign={"center"} >OU</Text>
       <Button
+        onClick={cadastrarDados}
+        mt="5%"
         borderRadius={5}
         _hover={{
           opacity: 0.9,
