@@ -17,6 +17,7 @@ import api from "@/utils/axios";
 import { toaster } from "@/components/ui/toaster"
 import { verificarToken } from "@/middleware/verificarToken";
 import { useRouter } from 'next/navigation';
+import TrocaCrud from "@/components/TrocaCrud";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -98,9 +99,14 @@ export default function Tasks() {
   }
 
   const editarTask = (taskEditar) => {
-    setInput(taskEditar.descricao);
-    setEditingIndex(taskEditar.id);
-    setIsDialogOpen(true)
+    if (!taskEditar) {
+      console.error("Task não encontrada ou inválida.");
+      return;
+    }
+    
+    setInput(Array.isArray(taskEditar.lugares) ? taskEditar.lugares : []); 
+    setEditingIndex(taskEditar.id || null);
+    setIsDialogOpen(true);
   };
 
   const excluirTask = async (id) => {
@@ -128,6 +134,7 @@ export default function Tasks() {
 
   return (
     <Box p={8}>
+      <TrocaCrud currentPage="/cargo" />
       <Heading mb={4}> CRUD Cargos </Heading>
       <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
         <GridItem colSpan={3} ml={9}>

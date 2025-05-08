@@ -47,6 +47,7 @@ export default function DialogPadrao({
             </Dialog.Header>
             <Dialog.Body>
               <VStack spacing={4} mb={4}>
+                {console.log("Input recebido no DialogPadrao:", input)}
                 {(Array.isArray(input) ? input : []).map((lugar, index) => (
                     <HStack key={index} spacing={2}>
                         <Input

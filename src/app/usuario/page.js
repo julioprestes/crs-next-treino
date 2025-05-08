@@ -15,6 +15,9 @@ import {
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
 import { toaster } from "@/components/ui/toaster"
+import TrocaCrud from "@/components/TrocaCrud";
+import { verificarToken } from "@/middleware/verificarToken";
+import { useRouter } from 'next/navigation';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -40,9 +43,20 @@ export default function Tasks() {
       }
   }
   
+  const router = useRouter();
+
   useEffect(() => {
-    buscarUsuario();
-  }, [])
+    const validarToken = async () => {
+      const valido = await verificarToken();
+      if (!valido) {
+        router.push('/');
+      } else {
+        await buscarUsuario();
+      }
+    };
+
+    validarToken();
+  }, []);
   
   const filteredTasks = tasks.filter(task =>
     task.nome.toLowerCase().includes(searchTerm.toLowerCase())
@@ -150,6 +164,7 @@ export default function Tasks() {
 
   return (
     <Box p={8}>
+      <TrocaCrud currentPage="/usuario" />
       <Heading mb={4}> CRUD usuarios </Heading>
       <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
         <GridItem colSpan={3} ml={9}>

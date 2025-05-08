@@ -15,6 +15,9 @@ import {
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
 import { toaster } from "@/components/ui/toaster"
+import TrocaCrud from "@/components/TrocaCrud";
+import { verificarToken } from "@/middleware/verificarToken";
+import { useRouter } from 'next/navigation';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -39,9 +42,20 @@ export default function Tasks() {
       }
   }
   
+  const router = useRouter();
+
   useEffect(() => {
-    buscarSessao();
-  }, [])
+    const validarToken = async () => {
+      const valido = await verificarToken();
+      if (!valido) {
+        router.push('/');
+      } else {
+        await buscarSessao();
+      }
+    };
+
+    validarToken();
+  }, []);
   
   const filteredTasks = tasks.filter(task =>
     task.idFilme.toString().includes(searchTerm.toLowerCase())
@@ -144,7 +158,8 @@ export default function Tasks() {
 
   return (
     <Box p={8}>
-      <Heading mb={4}> CRUD Sessoes </Heading>
+      <TrocaCrud currentPage="/sessao" />
+      <Heading mb={4}> CRUD Sessões </Heading>
       <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
         <GridItem colSpan={3} ml={9}>
           <InputPesquisa
@@ -160,7 +175,7 @@ export default function Tasks() {
               mb={4}
               l={2}
           > 
-              Criar sessao
+              Criar Sessão
           </Button>
           <DialogSessao
               headers={[editingIndex !== null ? 'Editar sessao' : 'Criar sessao']}
@@ -186,9 +201,12 @@ export default function Tasks() {
           />
         </GridItem>
       </Grid>
-      <Stack style={{display: 'flex', alignItems: 'center'}}>
+      <Stack style={{display: 'flex', alignItems: 'center', whiteSpace: 'pre-wrap'}}>
         <TabelaCrud
-          items={tasksAtuais}
+          items={tasksAtuais.map(task => ({
+            ...task,
+            lugares: task.lugares.map(l => `Lugar: ${l.lugar}, Linha: ${l.linha}, Coluna: ${l.coluna}, Alocado: ${l.alocado ? 'Sim' : 'Não'} ` ).join("\n"),
+        }))}
           onEdit={editarTask}
           onDelete={excluirTask}
           acoes={true}
@@ -198,7 +216,8 @@ export default function Tasks() {
             {name: 'ID da Sala', value: 'idSala'},
             {name: 'Data do Início', value: 'dataInicio'},
             {name: 'Data do Fim', value: 'dataFim'},
-            {name: 'Preço', value: 'preco'}
+            {name: 'Preço', value: 'preco'},
+            {name: 'Lugares', value: 'lugares'}
           ]}
         />
         <Grid templateColumns="repeat(4, 1fr)">
