@@ -10,7 +10,7 @@ import { FaLock } from "react-icons/fa";
 import React from 'react';
 import { useState, useEffect } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster"
-import { useRouter } from "next/navigation"; // Importa o roteador do Next.js
+import { useRouter } from "next/navigation"; 
 
 
 export default function LoginInput({ mandarDadosdofilho }) {

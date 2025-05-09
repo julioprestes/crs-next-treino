@@ -133,76 +133,79 @@ export default function Tasks() {
   }
 
   return (
-    <Box p={8}>
+    <>
       <TrocaCrud currentPage="/cargo" />
-      <Heading mb={4}> CRUD Cargos </Heading>
-      <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
-        <GridItem colSpan={3} ml={9}>
-          <InputPesquisa
-            searchTerm={searchTerm}
-            SetSeachTerm={setSearchTerm}
-          />
-        </GridItem>
-        <GridItem>
-          <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsDialogOpen(true)} 
-              mb={4}
-              l={2}
-          > 
-              Criar Cargo
-          </Button>
-          <DialogCreate
-              headers={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
-              buttonName={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
-              input={input}
-              setInput={setInput}
-              submit={criarTask}
-              editingIndex={editingIndex}
-              isOpen={isDialogOpen}
-              onClose={() => {
-                setIsDialogOpen(false);
-                setEditingIndex(null);
-              }}
-              loadingSave={loadingSave}
-          />
-        </GridItem>
-      </Grid>
-      <Stack style={{display: 'flex', alignItems: 'center'}}>
-        <TabelaCrud
-          items={tasksAtuais}
-          onEdit={editarTask}
-          onDelete={excluirTask}
-          acoes={true}
-          headers={[
-            {name: 'ID', value: 'id'},
-            {name: 'Descrição', value: 'descricao'},
-          ]}
-        />
-        <Grid templateColumns="repeat(4, 1fr)">
-          <GridItem colSpan={3}>
-            <PaginationTabela
-              items={filteredTasks.length}
-              itemsPerPage={itemsPerPage}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
+      <Box p={8}>
+        <Heading mb={4}> CRUD Cargos </Heading>
+        <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
+          <GridItem colSpan={3} ml={9}>
+            <InputPesquisa
+              searchTerm={searchTerm}
+              SetSeachTerm={setSearchTerm}
             />
           </GridItem>
-          <GridItem ml={12} colSpan={1}>
-            <SelectPage
-              setItensPerPage={setItemsPerPage}
-              items={[
-                {name: 5, value: 5},
-                {name: 10, value: 10},
-                {name: 15, value: 15},
-                {name: 20, value: 20},
-                {name: 25, value: 25},
-              ]}
+          <GridItem>
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setIsDialogOpen(true)} 
+                mb={4}
+                l={2}
+            > 
+                Criar Cargo
+            </Button>
+            <DialogCreate
+                headers={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
+                buttonName={[editingIndex !== null ? 'Editar Cargo' : 'Criar Cargo']}
+                input={input}
+                setInput={setInput}
+                submit={criarTask}
+                editingIndex={editingIndex}
+                isOpen={isDialogOpen}
+                onClose={() => {
+                  setIsDialogOpen(false);
+                  setEditingIndex(null);
+                }}
+                loadingSave={loadingSave}
             />
           </GridItem>
         </Grid>
-      </Stack>
-    </Box>
+        <Stack style={{display: 'flex', alignItems: 'center'}}>
+          <TabelaCrud
+            items={tasksAtuais}
+            onEdit={editarTask}
+            onDelete={excluirTask}
+            acoes={true}
+            headers={[
+              {name: 'ID', value: 'id'},
+              {name: 'Descrição', value: 'descricao'},
+            ]}
+          />
+          <Grid templateColumns="repeat(4, 1fr)">
+            <GridItem colSpan={3}>
+              <PaginationTabela
+                items={filteredTasks.length}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
+            </GridItem>
+            <GridItem ml={12} colSpan={1}>
+              <SelectPage
+                setItensPerPage={setItemsPerPage}
+                items={[
+                  {name: 5, value: 5},
+                  {name: 10, value: 10},
+                  {name: 15, value: 15},
+                  {name: 20, value: 20},
+                  {name: 25, value: 25},
+                ]}
+              />
+            </GridItem>
+          </Grid>
+        </Stack>
+      </Box>
+    </>
+    
   )
 }

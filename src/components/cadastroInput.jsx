@@ -96,7 +96,7 @@ export default function CadastroInput() {
         value={cpf}
         onChange={(e) => setCpf(e.target.value)}
       />
-      <Stack align="start">
+      <Stack justifyContent="center" alignItems="center">
         <Text>É estudante?</Text>
         <RadioGroup.Root 
             value={isEstudante ? "true" : "false"}
