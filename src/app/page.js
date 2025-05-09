@@ -20,7 +20,6 @@ export default function LoginPc() {
           type: "success",
         });
         
-
         localStorage.setItem('token', response.data.response);
         router.push('/cargo');
       } else {
