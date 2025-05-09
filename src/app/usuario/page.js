@@ -164,8 +164,8 @@ export default function Tasks() {
 
   return (
     <>
-      <Box p={8}>
-        <TrocaCrud currentPage="/usuario" />
+      <TrocaCrud currentPage="/usuario" />
+      <Box p={8}>  
         <Heading mb={4}> CRUD usuarios </Heading>
         <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
           <GridItem colSpan={3} ml={9}>

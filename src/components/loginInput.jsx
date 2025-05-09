@@ -10,7 +10,9 @@ import { FaLock } from "react-icons/fa";
 import React from 'react';
 import { useState, useEffect } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster"
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
+import api from "@/utils/axios";
+
 
 
 export default function LoginInput({ mandarDadosdofilho }) {
@@ -33,6 +35,37 @@ export default function LoginInput({ mandarDadosdofilho }) {
   const cadastrarDados = async () => {
     router.push("/cadastro")
   };
+
+  const recuperarSenha = async () => {
+    if (!Email) {
+      toaster.create({
+        title: "Por favor, insira seu e-mail para recuperar a senha.",
+        type: "error",
+      });
+    return;
+    }
+
+    try {
+      const response = await api.post('/usuario/recuperar-senha', { email: Email });
+      console.log("Resposta do servidor:", response);
+      if (response.status === 200) {
+        toaster.create({
+          title: "Código de recuperação enviado",
+          type: "success",
+        });
+      } else {
+        toaster.create({
+          title: response.data.message || "Erro ao recuperar a senha.",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      toaster.create({
+        title: error.response?.data?.message || "Erro ao conectar ao servidor.",
+        type: "error",
+      });
+    }
+  }
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -61,7 +94,15 @@ export default function LoginInput({ mandarDadosdofilho }) {
           onChange={(e) => setPassword(e.target.value)}
         />
       </InputGroup>
-      <Text m="0" mt="1%" cursor="pointer" opacity={0.8} >Esqueceu a senha?</Text>
+      <Text
+        m="0"
+        mt="1%"
+        cursor="pointer"
+        opacity={0.8}
+        onClick={recuperarSenha}
+      >
+        Esqueceu a senha?
+      </Text>
       <Button
         onClick={mandarDados}
         onKeyDown={(e) => {
