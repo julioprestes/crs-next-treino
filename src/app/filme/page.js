@@ -177,7 +177,7 @@ export default function Tasks() {
     <>
       <TrocaCrud currentPage="/filme" />
       <Box p={8}>
-        <Heading mb={4}> CRUD filmes </Heading>
+        <Heading mb={4}> CRUD Filmes </Heading>
         <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
           <GridItem colSpan={3} ml={9}> 
             <InputPesquisa

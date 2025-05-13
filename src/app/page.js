@@ -21,7 +21,7 @@ export default function LoginPc() {
         });
         
         localStorage.setItem('token', response.data.response);
-        router.push('/cargo');
+        router.push('/menu');
       } else {
         toaster.create({
           description: "Erro ao fazer login!",
