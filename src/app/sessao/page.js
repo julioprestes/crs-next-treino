@@ -206,7 +206,7 @@ export default function Tasks() {
           <TabelaCrud
             items={tasksAtuais.map(task => ({
               ...task,
-              lugares: task.lugares.map(l => `Lugar: ${l.lugar}, Linha: ${l.linha}, Coluna: ${l.coluna}, Alocado: ${l.alocado ? 'Sim' : 'Não'} ` ).join("\n"),
+              lugares: task.lugares.map(l => `Lugar: ${l.lugar} - Alocado: ${l.alocado ? 'Sim' : 'Não'} ` ).join("\n"),
           }))}
             onEdit={editarTask}
             onDelete={excluirTask}

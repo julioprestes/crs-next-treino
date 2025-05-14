@@ -49,12 +49,12 @@ export default function CadastroInput() {
             });
           }
         } catch (error) {
-          console.error(error); 
+          console.error("Erro na requisição:", error.response?.data || error.message);
           toaster.create({
             title: error.response?.data?.message || "Erro ao conectar com o servidor!",
             type: "error"
           });
-    }
+        }
   };
 
   useEffect(() => {

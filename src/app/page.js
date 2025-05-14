@@ -52,9 +52,13 @@ export default function LoginPc() {
     >
       <Box w="50%" display="flex" justifyContent="center" alignItems="center">
       </Box>
-
+        <Image
+          boxSize="950px"
+          src="/pipoca.png"
+          alt="Loading..."
+        />
       <Box
-        w="50%"
+        w="60%"
         display="flex"
         justifyContent="center"
         alignItems="center"

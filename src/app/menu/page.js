@@ -20,14 +20,12 @@ export default function MenuPage() {
     const router = useRouter();
 
     useEffect(() => {
-        const validarToken = async () => {
+      const validarToken = async () => {
         const valido = await verificarToken();
         if (!valido) {
             router.push('/');
-        } else {
-            await buscarFilme();
         }
-        };
+      };
 
     validarToken();
   }, []);

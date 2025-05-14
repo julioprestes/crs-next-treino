@@ -53,7 +53,7 @@ export default function DialogPadrao({
                         <Input
                         placeholder="Lugar"
                         value={lugar.lugar}
-                        isReadOnly
+                        isreadonly="true"
                         />
                         <Input
                         placeholder="Linha"
