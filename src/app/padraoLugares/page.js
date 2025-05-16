@@ -168,6 +168,7 @@ export default function Tasks() {
                 onClose={() => {
                   setIsDialogOpen(false);
                   setEditingIndex(null);
+                  setInput([]);
                 }}
                 loadingSave={loadingSave}
             />
