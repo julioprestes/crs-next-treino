@@ -205,6 +205,12 @@ export default function Tasks() {
                 onClose={() => {
                   setIsDialogOpen(false);
                   setEditingIndex(null);
+                  setInput('');
+                  setEmail('');
+                  setCpf('');
+                  setIdCargo(null);
+                  setSenha('');
+                  setIsEstudante(false);
                 }}
                 loadingSave={loadingSave}
             />

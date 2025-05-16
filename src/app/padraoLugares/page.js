@@ -155,7 +155,7 @@ export default function Tasks() {
                 mb={4}
                 l={2}
             > 
-                Criar padrao
+                Criar Padrão de Lugares
             </Button>
             <DialogPadrao
                 headers={[editingIndex !== null ? 'Editar padrao' : 'Criar padrao']}

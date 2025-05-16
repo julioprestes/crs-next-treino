@@ -1,8 +1,11 @@
 import { Link as ChakraLink, Flex } from "@chakra-ui/react";
 import NextLink from "next/link";
+import { MdMenu } from "react-icons/md"; 
+
 
 export default function TrocaCrud({ currentPage }) {
   const pages = [
+    { href: "/menu", label: <MdMenu size={24}/>},
     { href: "/usuario", label: "Crud Usuario" },
     { href: "/cargo", label: "Crud Cargo" },
     { href: "/filme", label: "Crud Filme" },
@@ -27,10 +30,12 @@ export default function TrocaCrud({ currentPage }) {
         .filter((page) => page.href !== currentPage)
         .map((page) => (
           <ChakraLink
-            key={page.href}
+            key={page.key || page.href}
             as={NextLink}
             href={page.href}
             borderRadius="md"
+            display="flex"
+            alignItems="center"
           >
             {page.label}
           </ChakraLink>

@@ -197,6 +197,11 @@ export default function Tasks() {
                 onClose={() => {
                   setIsDialogOpen(false);
                   setEditingIndex(null);
+                  setInput('');
+                  setIdFilme(null);
+                  setIdSala(null);
+                  setDataInicio(new Date());
+                  setDataFim(new Date());
                 }}
                 loadingSave={loadingSave}
             />

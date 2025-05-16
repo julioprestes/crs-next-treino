@@ -12,12 +12,12 @@ import { useState, useEffect } from "react";
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useRouter } from "next/navigation";
 import api from "@/utils/axios";
-
-
+import DialogRecuperarSenha from "@/components/DialogRecuperarSenha"; 
 
 export default function LoginInput({ mandarDadosdofilho }) {
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control dialog visibility
   const content = { email: Email, password: Password };
   const router = useRouter();
 
@@ -42,9 +42,8 @@ export default function LoginInput({ mandarDadosdofilho }) {
         title: "Por favor, insira seu e-mail para recuperar a senha.",
         type: "error",
       });
-    return;
+      return;
     }
-
     try {
       const response = await api.post('/usuario/recuperar-senha', { email: Email });
       console.log("Resposta do servidor:", response);
@@ -53,6 +52,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
           title: "Código de recuperação enviado",
           type: "success",
         });
+        setIsDialogOpen(true);
       } else {
         toaster.create({
           title: response.data.message || "Erro ao recuperar a senha.",
@@ -65,7 +65,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
         type: "error",
       });
     }
-  }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -103,6 +103,12 @@ export default function LoginInput({ mandarDadosdofilho }) {
       >
         Esqueceu a senha?
       </Text>
+      {/* Add DialogRecuperarSenha component */}
+      <DialogRecuperarSenha
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        email={Email}
+      />
       <Button
         onClick={mandarDados}
         onKeyDown={(e) => {
@@ -134,4 +140,4 @@ export default function LoginInput({ mandarDadosdofilho }) {
       <Toaster />
     </Stack>
   );
-} 
+}

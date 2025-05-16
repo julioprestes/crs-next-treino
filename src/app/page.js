@@ -69,7 +69,7 @@ export default function LoginPc() {
             <span style={{ fontFamily: "monospace", fontSize: "1.2em", color: "white" }} >!</span>
           </Heading>
           <Text m="0" fontSize="lg" color="white" textAlign="center" opacity={0.8} >
-            Seja bem-vindo ao SITE
+            Seja bem-vindo ao site do Cinema!
           </Text>
           <LoginInput mandarDadosdofilho={receberDadosdoFilho} />
         </VStack>

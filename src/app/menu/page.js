@@ -1,5 +1,5 @@
 'use client';
-import { Link as ChakraLink, Box, VStack } from "@chakra-ui/react";
+import { Link as ChakraLink, Box, VStack, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useState, useEffect } from "react";
 import { verificarToken } from "@/middleware/verificarToken";
@@ -36,6 +36,7 @@ export default function MenuPage() {
               filter="contrast(95%)"
             >
           <VStack align="center" >
+            <Text textStyle="4xl" fontWeight="semibold" p={5}>Menu</Text>
             {pages
               .filter((page) => page.href)
               .map((page) => (

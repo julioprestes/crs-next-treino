@@ -175,6 +175,8 @@ export default function Tasks() {
                 onClose={() => {
                   setIsDialogOpen(false);
                   setEditingIndex(null);
+                  setInput('');
+                  setIdPadraoLugares(null);
                 }}
                 loadingSave={loadingSave}
             />

@@ -11,7 +11,8 @@ import {
   Button,
   Grid,
   GridItem,
-  Image
+  Image,
+  Flex
 } from "@chakra-ui/react"
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
@@ -214,6 +215,11 @@ export default function Tasks() {
                 onClose={() => {
                   setIsDialogOpen(false);
                   setEditingIndex(null);
+                  setInput('');
+                  setDescricao('');
+                  setAutor('');
+                  setDuracao(null);
+                  setFile(null);
                 }}
                 loadingSave={loadingSave}
             />
@@ -224,12 +230,14 @@ export default function Tasks() {
             items={tasksAtuais.map(task => ({
               ...task,
               imagemLink: (
-                <Image
+                <Flex justify="center" align="center" h="100%">
+                  <Image
                   rounded="md"
                   src={`http://localhost:3333${task.imagemLink.replace(/^.*\/public/, '')}`} 
                   alt={`Capa do filme ${task.nome}`} 
                   style={{ width: '70px', height: '100px', objectFit: 'cover' }} 
                 />
+                </Flex>
               )
             }))}
             onEdit={editarTask}
